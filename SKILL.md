@@ -191,30 +191,7 @@ Prefer the same API surfaces already exercised by the template:
 
 Prefer Zotero's built-in menu API for menus and toolkit wrappers for the remaining helper surfaces instead of ad hoc DOM manipulation when an existing API already exists.
 
-### Menu API migration note
-
-Do not use `ztoolkit.Menu.register()` in new work. In current toolkit releases such as `zotero-plugin-toolkit@5.1.2`, the exported toolkit helpers no longer include a `Menu` helper. Use `Zotero.MenuManager.registerMenu()` with:
-
-- `menuID`
-- `pluginID`
-- `target`
-- `menus`
-
-Use `menuType` values like:
-
-- `menuitem`
-- `separator`
-- `submenu`
-
-Use Zotero menu targets such as:
-
-- `main/library/item`
-- `main/library/collection`
-- `main/menubar/file`
-- `main/tab`
-- `reader/menubar/file`
-
-For labels in shared Zotero windows, prefer `l10nID: getLocaleID(...)` over raw label strings so the menu can localize through Fluent.
+For menu migration details and a Zotero 8-style example shape, see `references/menu-migration.md`.
 
 For a repo-grounded API map, see `references/api-style.md`.
 
@@ -415,6 +392,7 @@ Before considering work complete:
 
 - `references/repo-map.md`
 - `references/api-style.md`
+- `references/menu-migration.md`
 - `../README.md`
 - `../src/hooks.ts`
 - `../src/modules/examples.ts`
