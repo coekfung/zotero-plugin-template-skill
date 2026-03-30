@@ -7,7 +7,11 @@ Older template-era examples used `ztoolkit.Menu.register()`. Current toolkit rel
 - `Zotero.MenuManager.registerMenu()`
 - `Zotero.MenuManager.unregisterMenu()`
 
-This guide describes the migration shape and is informed by both the local template migration and a Zotero 8-style upstream example from `northword/zotero-format-metadata/src/modules/menu.ts`.
+This guide describes the Zotero 8 migration shape for moving from older helper-based menus to `Zotero.MenuManager`.
+
+## Compatibility
+
+After applying the migration described in this guide, treat the resulting menu implementation as Zotero 8-only unless you separately verify backward compatibility. In particular, field-menu usage such as `itemPane/info/row` should be treated as a Zotero 8+ pattern.
 
 ## Core registration shape
 
@@ -80,7 +84,7 @@ Example submenu shape:
 }
 ```
 
-## Target strings seen in Zotero 8-style usage
+## Target strings for the Zotero 8 migration path
 
 Common targets include:
 
@@ -97,7 +101,7 @@ Choose the target based on the UI surface you are extending, not based on where 
 
 ## Context-driven menu behavior
 
-The upstream Zotero 8-style example uses context helpers heavily in lifecycle hooks.
+This migration style relies heavily on context helpers in lifecycle hooks.
 
 In `onShowing` and related hooks, expect a context object with helpers such as:
 
@@ -136,11 +140,32 @@ l10nID: getLocaleID("menuitem-label");
 
 Prefer this over raw `label` strings so the menu participates in the same localization flow as the rest of the plugin UI.
 
-If a menu's localized string may not be ready immediately on first display, the upstream example shows a defensive `onShown` pattern that checks `menuElem.textContent` and repairs or warns if localization is missing.
+For menu-facing Fluent messages, prefer `.label` attributes instead of bare value-only entries. This is the safer cross-platform shape for shared-window menu labels.
 
-## TypeScript pattern from upstream example
+Example migration:
 
-The upstream example also shows a useful typed style for menu descriptors:
+```ftl
+rule-require-language-menu-item =
+  .label = Auto detect item language
+```
+
+If the menu appears in a shared Zotero window, make sure the relevant Fluent files are inserted into that window before relying on `l10nID`. A representative pattern is:
+
+```ts
+getLocaleFileFullNames(localeFilesForMainWindow).forEach((file) =>
+  (win as any).MozXULElement.insertFTLIfNeeded(file),
+);
+```
+
+That pattern matters for migration because replacing old helper-based menu labels with `l10nID` is not sufficient on its own. The window also needs the matching FTL files registered through `insertFTLIfNeeded(...)`, and those links should be removed on window unload when the plugin cleans up.
+
+Keep menu-facing strings in a window-oriented FTL file such as `main-window.ftl`, loaded for shared-window usage, instead of assuming a generic addon-level FTL file alone is enough for menu localization.
+
+If a menu's localized string may not be ready immediately on first display, use a defensive `onShown` pattern that checks `menuElem.textContent` and repairs or warns if localization is missing.
+
+## TypeScript pattern
+
+Use a narrow typed style for menu descriptors when `_ZoteroTypes.MenuManager.*` definitions are available:
 
 ```ts
 type FieldMenu =
@@ -158,10 +183,12 @@ When migrating older `ztoolkit.Menu.register()` examples:
 1. Replace helper-specific registration calls with `Zotero.MenuManager.registerMenu({...})`.
 2. Convert old tag-based menu nodes into `menuType` descriptors.
 3. Replace direct label strings with `l10nID` where the menu appears in shared Zotero UI.
-4. Replace inline DOM-placement assumptions with the correct `target` string.
-5. Use nested `menus` arrays for submenus.
-6. Move runtime enable/visible logic into `onShowing` and related hooks.
-7. Unregister manually with `Zotero.MenuManager.unregisterMenu(menuID)` only when needed; plugin unload handling in Zotero will also remove plugin-owned menu registrations.
+4. Ensure the target window has the required Fluent files inserted with `MozXULElement.insertFTLIfNeeded(...)` before relying on `l10nID`.
+5. Convert menu-facing Fluent messages to `.label` attributes when migrating older bare-value entries.
+6. Replace inline DOM-placement assumptions with the correct `target` string.
+7. Use nested `menus` arrays for submenus.
+8. Move runtime enable/visible logic into `onShowing` and related hooks.
+9. Unregister manually with `Zotero.MenuManager.unregisterMenu(menuID)` only when needed; plugin unload handling in Zotero will also remove plugin-owned menu registrations.
 
 ## Mapping from old helper style to current Zotero API
 
@@ -181,11 +208,13 @@ In this template family:
 - keep menu construction inside feature modules, not in bootstrap wiring
 - derive `pluginID` from config
 - derive `l10nID` with `getLocaleID(...)`
+- ensure shared-window FTL files are inserted with `insertFTLIfNeeded(...)` before menu display
 - keep menu icons under packaged addon assets and reference them via `rootURI` or `chrome://...`
 
 ## References
 
 - Local skill summary: `../SKILL.md`
 - Local API map: `./api-style.md`
-- Upstream Zotero 8-style example: `https://github.com/northword/zotero-format-metadata/blob/main/src/modules/menu.ts`
+- Menu example reference: `https://github.com/northword/zotero-format-metadata/blob/main/src/modules/menu.ts`
+- Locale registration reference: `https://github.com/northword/zotero-format-metadata/blob/main/src/utils/locale.ts`
 - Zotero core menu API implementation: `https://github.com/zotero/zotero/blob/main/chrome/content/zotero/xpcom/pluginAPI/menuManager.js`
