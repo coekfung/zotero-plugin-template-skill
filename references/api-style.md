@@ -47,8 +47,8 @@ Current template migration guidance:
 
 - Older examples used `ztoolkit.Menu.register()`, but current `zotero-plugin-toolkit` releases no longer export a `Menu` helper.
 - Use Zotero's built-in menu API with `menuID`, `pluginID`, `target`, and `menus`.
-- Use `menuType` values such as `menuitem`, `separator`, and `submenu`.
 - Use `l10nID` for shared-window menu labels rather than direct label strings.
+- See `menu-migration.md` for the dedicated migration guide and a Zotero 8-style example pattern.
 
 ### Item list and item pane extension points
 
