@@ -173,6 +173,7 @@ Do not hardcode values that already come from `package.json` config.
 Prefer the same API surfaces already exercised by the template:
 
 - `Zotero.Notifier.registerObserver()` for plugin event observation.
+- `Zotero.MenuManager.registerMenu()` and `unregisterMenu()` for main-window and context-menu integrations.
 - `Zotero.PreferencePanes.register()` for preferences UI.
 - `Zotero.ItemTreeManager.registerColumns()` for item list columns.
 - `Zotero.ItemPaneManager.registerInfoRow()` and `registerSection()` for item pane integrations.
@@ -180,7 +181,6 @@ Prefer the same API surfaces already exercised by the template:
 - `zotero-plugin-toolkit` for higher-level utilities:
   - `ZoteroToolkit`
   - `ztoolkit.UI.createElement()`
-  - `ztoolkit.Menu.register()`
   - `ztoolkit.Keyboard.register()`
   - `ztoolkit.ProgressWindow`
   - `ztoolkit.Dialog`
@@ -189,7 +189,32 @@ Prefer the same API surfaces already exercised by the template:
   - `ztoolkit.Clipboard`
   - `ztoolkit.FilePicker`
 
-Prefer toolkit wrappers for UI registration and cleanup over ad hoc DOM manipulation when an existing wrapper already exists.
+Prefer Zotero's built-in menu API for menus and toolkit wrappers for the remaining helper surfaces instead of ad hoc DOM manipulation when an existing API already exists.
+
+### Menu API migration note
+
+Do not use `ztoolkit.Menu.register()` in new work. In current toolkit releases such as `zotero-plugin-toolkit@5.1.2`, the exported toolkit helpers no longer include a `Menu` helper. Use `Zotero.MenuManager.registerMenu()` with:
+
+- `menuID`
+- `pluginID`
+- `target`
+- `menus`
+
+Use `menuType` values like:
+
+- `menuitem`
+- `separator`
+- `submenu`
+
+Use Zotero menu targets such as:
+
+- `main/library/item`
+- `main/library/collection`
+- `main/menubar/file`
+- `main/tab`
+- `reader/menubar/file`
+
+For labels in shared Zotero windows, prefer `l10nID: getLocaleID(...)` over raw label strings so the menu can localize through Fluent.
 
 For a repo-grounded API map, see `references/api-style.md`.
 

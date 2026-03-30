@@ -38,6 +38,18 @@ Preference-pane pattern in this template:
 
 Use these when the feature needs Zotero event streams or plugin-shutdown cleanup hooks.
 
+### Menus
+
+- `Zotero.MenuManager.registerMenu()`
+- `Zotero.MenuManager.unregisterMenu()`
+
+Current template migration guidance:
+
+- Older examples used `ztoolkit.Menu.register()`, but current `zotero-plugin-toolkit` releases no longer export a `Menu` helper.
+- Use Zotero's built-in menu API with `menuID`, `pluginID`, `target`, and `menus`.
+- Use `menuType` values such as `menuitem`, `separator`, and `submenu`.
+- Use `l10nID` for shared-window menu labels rather than direct label strings.
+
 ### Item list and item pane extension points
 
 - `Zotero.ItemTreeManager.registerColumns()`
@@ -60,7 +72,6 @@ Use these for item-based commands and prompt-driven searches.
 - `new ZoteroToolkit()`
 - `ztoolkit.log()`
 - `ztoolkit.UI.createElement()`
-- `ztoolkit.Menu.register()`
 - `ztoolkit.Keyboard.register()`
 - `new ztoolkit.ProgressWindow()`
 - `new ztoolkit.Dialog()`
