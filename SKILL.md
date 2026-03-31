@@ -18,6 +18,7 @@ Load this skill when:
 Follow these command rules strictly:
 
 - **DON'T:** `npm start` (blocks), `npm run release` (interactive).
+- **DON'T:** run `lsp_diagnostics` for files under `test/`; `test/` is not part of the effective TypeScript project in this template, so diagnostics there can be misleading. Use build, lint, and test commands for validation instead.
 - **DO:**
   ```bash
   npm run build
