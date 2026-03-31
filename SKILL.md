@@ -78,6 +78,7 @@ Follow these command rules strictly:
 - **Don't** put business logic in `src/hooks.ts`.
 - **Don't** use raw preference keys without the `prefsPrefix`.
 - **Don't** forget cleanup for non-toolkit registered observers/UI.
+- **Don't** hand-roll `extra` field parsing unless there is a clear reason not to use `ExtraFieldTool`.
 - **Don't** claim Zotero 9 support (Template target: 7/8).
 
 ## References
@@ -85,5 +86,6 @@ Follow these command rules strictly:
 - [Lifecycle & Hooks](references/lifecycle-api.md)
 - [Menus & Context](references/menu-api.md)
 - [Columns & Tables](references/column-api.md)
+- [Extra Field API](references/extra-field-api.md)
 - [UI & Toolkit](references/ui-api.md)
 - [Repository Map](references/repo-map.md)
